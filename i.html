@@ -1,0 +1,1011 @@
+<!-- Jarvis AI Assistant Button (Bottom Right) -->
+<div id="jarvis-btn" class="jarvis-btn">
+  <i class="fas fa-robot"></i>
+</div>
+
+<!-- Jarvis Modal -->
+<div id="jarvis-modal" class="jarvis-modal">
+  <div class="jarvis-content">
+    <div class="jarvis-header">
+      <h3><i class="fas fa-brain"></i> Jarvis AI</h3>
+      <button id="close-jarvis" class="jarvis-close">&times;</button>
+    </div>
+    <div class="jarvis-options">
+      <button id="chat-ai-mode" class="jarvis-option">
+        <i class="fas fa-comments"></i> Chat AI
+      </button>
+      <button id="voice-ai-mode" class="jarvis-option active">
+        <i class="fas fa-microphone"></i> Voice AI
+      </button>
+    </div>
+
+    <!-- Chat AI Interface -->
+    <div id="chat-ai-interface" class="jarvis-interface" style="display: none">
+      <div class="chat-messages" id="chat-messages">
+        <div class="message bot">Hello! How can I assist you today?</div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chat-input" placeholder="Type your message..." />
+        <button id="send-chat"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+
+    <!-- Voice AI Interface -->
+    <div id="voice-ai-interface" class="jarvis-interface">
+      <div class="jarvis-wave">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <div class="jarvis-status" id="jarvis-status">
+        Say "Hi Jarvis" to begin
+      </div>
+      <div class="jarvis-controls">
+        <button id="start-listen" class="jarvis-btn-primary">
+          Start Listening
+        </button>
+        <button id="stop-listen" class="jarvis-btn-secondary" disabled>
+          Stop
+        </button>
+      </div>
+      <div class="jarvis-transcript" id="jarvis-transcript">
+        Awaiting voice...
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Jarvis AI Styles - Bottom Right */
+  .jarvis-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    color: var(--light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: var(--glow-intensity), 0 4px 20px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+  }
+  .jarvis-btn:hover {
+    transform: scale(1.15);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+  }
+  [data-theme="light"] .jarvis-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .jarvis-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(0);
+  }
+
+  .jarvis-content {
+    background: var(--chatbot-bg);
+    border-radius: 20px;
+    padding: 25px;
+    width: 92%;
+    max-width: 400px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    color: var(--light);
+    font-family: "Inter", sans-serif;
+    animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes modalPop {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .jarvis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .jarvis-header h3 {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--gray-medium);
+  }
+
+  .jarvis-close {
+    background: none;
+    border: none;
+    color: var(--light);
+    font-size: 1.8rem;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+  }
+  .jarvis-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  [data-theme="light"] .jarvis-close {
+    color: var(--dark);
+  }
+  [data-theme="light"] .jarvis-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .jarvis-options {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .jarvis-option {
+    flex: 1;
+    padding: 14px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--light);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+  }
+  .jarvis-option:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+  }
+  .jarvis-option.active {
+    background: linear-gradient(135deg, var(--gray-medium), var(--gray-dark));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  [data-theme="light"] .jarvis-option {
+    color: var(--dark);
+  }
+
+  .jarvis-interface {
+    text-align: center;
+  }
+
+  .jarvis-wave {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    height: 40px;
+    margin: 0 auto 18px;
+    width: 150px;
+  }
+  .jarvis-wave .bar {
+    width: 6px;
+    background: var(--gray-medium);
+    border-radius: 3px;
+    animation: pulseWave 1.2s infinite ease-in-out;
+    animation-delay: calc(0.1s * var(--i));
+  }
+  .jarvis-wave .bar:nth-child(1) {
+    --i: 1;
+    height: 20%;
+  }
+  .jarvis-wave .bar:nth-child(2) {
+    --i: 2;
+    height: 40%;
+  }
+  .jarvis-wave .bar:nth-child(3) {
+    --i: 3;
+    height: 60%;
+  }
+  .jarvis-wave .bar:nth-child(4) {
+    --i: 4;
+    height: 40%;
+  }
+  .jarvis-wave .bar:nth-child(5) {
+    --i: 5;
+    height: 20%;
+  }
+
+  @keyframes pulseWave {
+    0%,
+    100% {
+      transform: scaleY(1);
+    }
+    50% {
+      transform: scaleY(1.4);
+    }
+  }
+
+  .jarvis-status {
+    margin-bottom: 16px;
+    font-size: 1rem;
+    color: var(--gray-medium);
+    min-height: 22px;
+  }
+
+  .jarvis-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+  .jarvis-btn-primary,
+  .jarvis-btn-secondary {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.25s ease;
+  }
+  .jarvis-btn-primary {
+    background: linear-gradient(135deg, var(--gray-medium), var(--gray-dark));
+    color: white;
+  }
+  .jarvis-btn-secondary {
+    background: var(--glass-bg);
+    color: var(--light);
+    border: 1px solid var(--glass-border);
+  }
+  [data-theme="light"] .jarvis-btn-secondary {
+    color: var(--dark);
+  }
+  .jarvis-btn-primary:hover,
+  .jarvis-btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  .jarvis-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .jarvis-transcript {
+    margin-top: 14px;
+    padding: 12px;
+    background: var(--glass-bg);
+    border-radius: 10px;
+    min-height: 40px;
+    font-size: 0.9rem;
+    color: var(--light);
+    border: 1px solid var(--glass-border);
+  }
+  [data-theme="light"] .jarvis-transcript {
+    color: var(--dark);
+  }
+
+  /* Chat AI Styles */
+  .chat-messages {
+    height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .message {
+    padding: 8px 12px;
+    border-radius: 12px;
+    max-width: 80%;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  .message.user {
+    background: rgba(76, 175, 80, 0.2);
+    align-self: flex-end;
+    color: var(--success);
+  }
+  .message.bot {
+    background: rgba(255, 152, 0, 0.2);
+    align-self: flex-start;
+    color: var(--warning);
+  }
+  .chat-input {
+    display: flex;
+    gap: 8px;
+  }
+  .chat-input input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    color: var(--light);
+  }
+  [data-theme="light"] .chat-input input {
+    color: var(--dark);
+  }
+  .chat-input button {
+    padding: 10px 14px;
+    background: var(--gray-medium);
+    color: var(--dark);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // DOM Elements
+    const jarvisBtn = document.getElementById("jarvis-btn");
+    const modal = document.getElementById("jarvis-modal");
+    const closeBtn = document.getElementById("close-jarvis");
+    const chatModeBtn = document.getElementById("chat-ai-mode");
+    const voiceModeBtn = document.getElementById("voice-ai-mode");
+    const chatInterface = document.getElementById("chat-ai-interface");
+    const voiceInterface = document.getElementById("voice-ai-interface");
+    const chatInput = document.getElementById("chat-input");
+    const sendChatBtn = document.getElementById("send-chat");
+    const chatMessages = document.getElementById("chat-messages");
+    const startListenBtn = document.getElementById("start-listen");
+    const stopListenBtn = document.getElementById("stop-listen");
+    const statusEl = document.getElementById("jarvis-status");
+    const transcriptEl = document.getElementById("jarvis-transcript");
+
+    let recognition;
+    let synth = window.speechSynthesis;
+    let awaitingDownloadChoice = false;
+
+    // Open Modal
+    jarvisBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+    });
+
+    // Close Modal
+    const closeModal = () => {
+      modal.style.display = "none";
+      if (recognition) recognition.stop();
+      awaitingDownloadChoice = false;
+    };
+    closeBtn.addEventListener("click", closeModal);
+
+    // Switch Modes
+    chatModeBtn.addEventListener("click", () => {
+      chatModeBtn.classList.add("active");
+      voiceModeBtn.classList.remove("active");
+      chatInterface.style.display = "block";
+      voiceInterface.style.display = "none";
+    });
+    voiceModeBtn.addEventListener("click", () => {
+      voiceModeBtn.classList.add("active");
+      chatModeBtn.classList.remove("active");
+      voiceInterface.style.display = "block";
+      chatInterface.style.display = "none";
+    });
+
+    // Chat AI Send
+    sendChatBtn.addEventListener("click", sendMessage);
+    chatInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    function sendMessage() {
+      const msg = chatInput.value.trim();
+      if (!msg) return;
+      addMessage(msg, "user");
+      chatInput.value = "";
+
+      const userMsg = msg.toLowerCase().trim();
+      let response =
+        "I'm not sure how to help with that. Try asking about fraud detection, file analysis, dashboard, or case management.";
+
+      // --- 100+ Project-Specific Q&A Pairs ---
+      const qaPairs = [
+        // Basic Chat & Greetings
+        {
+          q: ["hi", "hello", "hey", "jarvis", "yo", "howdy"],
+          a: "Hello! I'm Jarvis, your Fraudshield Pro assistant. How can I help you detect fraud today?",
+        },
+        {
+          q: ["bye", "goodbye", "see you", "exit", "quit", "later"],
+          a: "Goodbye! Stay vigilant against fraud. I'm here whenever you need me.",
+        },
+        {
+          q: ["thanks", "thank you", "thx", "cheers", "appreciate it"],
+          a: "You're welcome! Protecting your business is what I'm here for.",
+        },
+        {
+          q: ["okay", "ok", "alright", "got it", "sure", "fine"],
+          a: "Understood! Let me know if you need further assistance.",
+        },
+        {
+          q: ["yes", "yeah", "yep", "yup", "absolutely"],
+          a: "Great! What would you like to do next?",
+        },
+        {
+          q: ["no", "nope", "nah", "not really"],
+          a: "No problem! Feel free to ask anything else.",
+        },
+        {
+          q: ["help", "assist", "support", "what can you do"],
+          a: "I can help you upload files, analyze transactions, view the dashboard, download reports, or manage fraud cases. Just ask!",
+        },
+        {
+          q: ["who are you", "what is this", "introduce yourself"],
+          a: "I'm Jarvis, the AI assistant for Fraudshield Pro — your advanced fraud detection and case management system.",
+        },
+        {
+          q: ["how are you", "how's it going"],
+          a: "I'm functioning optimally! Ready to help you fight fraud. How can I assist you?",
+        },
+        {
+          q: ["what can you do", "features", "capabilities"],
+          a: "I can analyze transaction files, detect fraud, generate reports, navigate to your dashboard, and help manage fraud cases. Try saying 'upload file' or 'show dashboard'!",
+        },
+        {
+          q: ["cool", "nice", "awesome", "sweet"],
+          a: "Glad you think so! Let's keep your business safe from fraud.",
+        },
+        {
+          q: ["really", "seriously", "are you sure"],
+          a: "Yes, absolutely! Fraudshield Pro uses advanced AI to detect fraud with 99.8% accuracy.",
+        },
+        {
+          q: ["wow", "amazing", "impressive"],
+          a: "Thank you! Our team works hard to stay ahead of evolving fraud tactics.",
+        },
+        {
+          q: ["sorry", "my bad", "oops"],
+          a: "No worries! Fraud detection is complex — that's why I'm here to help.",
+        },
+        {
+          q: ["please", "could you", "would you mind"],
+          a: "Of course! Just tell me what you need.",
+        },
+
+        // File Upload & Analysis
+        {
+          q: ["upload file", "upload data", "analyze file", "submit file"],
+          a: "Click the 'Upload Data' section on the home page, select your CSV, Excel, or JSON file, and click 'Analyze' to begin fraud detection.",
+        },
+        {
+          q: [
+            "supported formats",
+            "file types",
+            "what files",
+            "acceptable formats",
+          ],
+          a: "I support CSV, Excel (.xlsx, .xls), and JSON files. Maximum size: 10MB.",
+        },
+        {
+          q: [
+            "how to analyze",
+            "start analysis",
+            "detect fraud",
+            "run detection",
+          ],
+          a: "Upload a file using the form, then click 'Analyze'. I'll scan every transaction for anomalies and fraud patterns.",
+        },
+        {
+          q: ["analysis time", "how long", "processing time"],
+          a: "Analysis is near-instant! Most files are processed in under 5 seconds.",
+        },
+        {
+          q: ["what is analyzed", "detection criteria", "fraud factors"],
+          a: "I check transaction amount, location, device, time, and behavioral patterns to calculate a risk score for each transaction.",
+        },
+        {
+          q: ["sample file", "example data", "template"],
+          a: "You can use any standard transaction file with columns like 'id', 'amount', 'type', 'date', 'location', and 'device'.",
+        },
+        {
+          q: ["large file", "big file", "over 10mb"],
+          a: "Files must be under 10MB. For larger datasets, please split them into smaller chunks.",
+        },
+        {
+          q: ["empty file", "no data", "blank file"],
+          a: "Make sure your file contains valid transaction data with proper headers.",
+        },
+        {
+          q: ["corrupted file", "invalid file", "error reading"],
+          a: "Ensure your file isn't corrupted and matches one of our supported formats (CSV, Excel, JSON).",
+        },
+        {
+          q: ["reanalyze", "run again", "redo analysis"],
+          a: "Just upload the same file again or a new one to run a fresh analysis.",
+        },
+
+        // Dashboard
+        {
+          q: [
+            "open dashboard",
+            "show dashboard",
+            "go to dashboard",
+            "view dashboard",
+          ],
+          a: "Click the 'View Full Dashboard' button after analysis, or use the top navigation menu.",
+        },
+        {
+          q: ["dashboard metrics", "what is shown", "dashboard info"],
+          a: "Your dashboard shows total transactions, fraud detected, amount saved, detection rate, fraud trends, and recent alerts.",
+        },
+        {
+          q: ["refresh dashboard", "update data", "reload"],
+          a: "Click the 'Refresh' button on the dashboard to reload the latest data.",
+        },
+        {
+          q: ["fraud trends", "risk chart", "trend analysis"],
+          a: "The dashboard includes visual charts for fraud trends over time and fraud distribution by region.",
+        },
+        {
+          q: ["transaction details", "view transactions", "see all"],
+          a: "After analysis, scroll down to see high-risk transactions. Click 'View Full Dashboard' for the complete list.",
+        },
+        {
+          q: ["metrics meaning", "what does this mean"],
+          a: "Total Transactions = all analyzed, Fraud Detected = confirmed fraud, Amount Saved = estimated prevented losses, Detection Rate = % of suspicious/fraud transactions.",
+        },
+        {
+          q: ["real time", "live data", "current status"],
+          a: "Yes! The dashboard updates in real-time as new fraud is detected.",
+        },
+        {
+          q: ["export dashboard", "save dashboard", "download dashboard"],
+          a: "Use the 'Export' button on the dashboard to download as PDF, Excel, Word, or CSV.",
+        },
+        {
+          q: ["customize dashboard", "change view", "modify layout"],
+          a: "Dashboard customization is coming soon! For now, all key metrics are displayed by default.",
+        },
+        {
+          q: ["historical data", "past reports", "previous analysis"],
+          a: "Currently, we show the latest analysis. Historical data storage will be available in future updates.",
+        },
+
+        // Download Reports
+        {
+          q: ["download report", "export data", "save results", "get report"],
+          a: "After analysis, click the 'Download Report' button and choose your format: PDF, Excel, Word, or CSV.",
+        },
+        {
+          q: ["pdf report", "download pdf", "pdf format"],
+          a: "Click 'Download Report' → 'PDF' to get a comprehensive fraud analysis report with executive summary and recommendations.",
+        },
+        {
+          q: ["excel report", "download excel", "xlsx"],
+          a: "Choose 'Excel' to download a multi-sheet workbook with summary, transactions, risk analysis, and geographic data.",
+        },
+        {
+          q: ["csv report", "download csv", "comma separated"],
+          a: "Select 'CSV' for a raw data export of all analyzed transactions with risk scores and fraud status.",
+        },
+        {
+          q: ["word report", "download word", "docx"],
+          a: "Pick 'Word' to generate a formatted document with charts and analysis (converted to PDF for download).",
+        },
+        {
+          q: ["which format", "best format", "recommend format"],
+          a: "For executives: PDF. For analysts: Excel. For developers: CSV. For documentation: Word.",
+        },
+        {
+          q: ["report contents", "what's in report"],
+          a: "Reports include executive summary, detailed statistics, high-risk transactions, geographic analysis, and actionable recommendations.",
+        },
+        {
+          q: ["custom report", "specific data", "tailored report"],
+          a: "Custom reports aren't available yet, but our comprehensive reports include all key fraud detection insights.",
+        },
+        {
+          q: ["email report", "send report", "share report"],
+          a: "Reports are downloaded locally. You can email them manually after download.",
+        },
+        {
+          q: ["report size", "file size", "how big"],
+          a: "Report size depends on your data. Typical reports are 1-5MB for PDF/Word, smaller for CSV/Excel.",
+        },
+
+        // Case Management
+        {
+          q: ["case management", "fraud cases", "investigate fraud"],
+          a: "Go to 'Case Management' in the top menu to review, assign, and resolve fraud cases automatically generated from high-risk transactions.",
+        },
+        {
+          q: ["new case", "create case", "manual case"],
+          a: "In Case Management, click 'New Case' to manually create a case for any suspicious transaction.",
+        },
+        {
+          q: ["view case", "case details", "see case"],
+          a: "Click the 'eye' icon next to any case in the table to see full details, evidence, timeline, and notes.",
+        },
+        {
+          q: ["assign case", "change assignee", "reassign"],
+          a: "Edit a case to assign it to a team member like John, Sarah, Mike, or Emily.",
+        },
+        {
+          q: ["case status", "update status", "change status"],
+          a: "Cases can be New, Investigating, Resolved, or Closed. Update status when you make progress.",
+        },
+        {
+          q: ["case priority", "high priority", "urgent"],
+          a: "Fraud cases are automatically set to High priority. Suspicious cases are Medium priority.",
+        },
+        {
+          q: ["case evidence", "proof", "documentation"],
+          a: "Each case includes transaction records, risk analysis, and system-generated evidence.",
+        },
+        {
+          q: ["add note", "comment", "update case"],
+          a: "In the case details view, use the 'Add Note' section to document your investigation progress.",
+        },
+        {
+          q: ["close case", "resolve case", "finish case"],
+          a: "Change the case status to 'Resolved' or 'Closed' when your investigation is complete.",
+        },
+        {
+          q: ["case filters", "search cases", "find case"],
+          a: "Use the filters at the top of Case Management to search by status, priority, assignee, or case ID.",
+        },
+
+        // Security & Accuracy
+        {
+          q: ["accuracy", "how accurate", "detection rate"],
+          a: "Fraudshield Pro has a 99.8% detection accuracy based on real-world transaction data and machine learning models.",
+        },
+        {
+          q: ["security", "is it secure", "data protection"],
+          a: "All data is encrypted in transit and at rest. We comply with financial industry security standards.",
+        },
+        {
+          q: ["privacy", "data storage", "do you save data"],
+          a: "Your uploaded files are processed in memory and not stored permanently. Reports are generated on-demand.",
+        },
+        {
+          q: ["real-time alerts", "notifications", "fraud warnings"],
+          a: "Yes! You'll see real-time fraud alerts in the top-right corner when new high-risk transactions are detected.",
+        },
+        {
+          q: ["machine learning", "how it works", "ai model"],
+          a: "Our AI learns from millions of transactions to identify evolving fraud patterns. It improves with every analysis.",
+        },
+        {
+          q: ["false positives", "wrong detection", "legitimate flagged"],
+          a: "Our system minimizes false positives through multi-factor analysis. Suspicious transactions are flagged for review, not automatically blocked.",
+        },
+        {
+          q: ["compliance", "regulations", "standards"],
+          a: "Fraudshield Pro complies with PCI DSS, GDPR, and other financial industry regulations.",
+        },
+        {
+          q: ["data encryption", "encryption method"],
+          a: "We use AES-256 encryption for data at rest and TLS 1.3 for data in transit.",
+        },
+        {
+          q: ["audit trail", "activity log", "tracking"],
+          a: "All case management activities are logged with timestamps and user information for audit purposes.",
+        },
+        {
+          q: ["backup", "data recovery", "disaster recovery"],
+          a: "Our infrastructure includes automated backups and disaster recovery protocols.",
+        },
+
+        // Troubleshooting
+        {
+          q: ["error uploading", "file not working", "upload failed"],
+          a: "Ensure your file is under 10MB and in CSV, Excel, or JSON format. Check that it contains valid transaction data.",
+        },
+        {
+          q: ["no results", "empty analysis", "nothing shown"],
+          a: "If no results appear, your file may be empty or lack required fields like 'amount' or 'date'. Try our sample data format.",
+        },
+        {
+          q: ["login required", "why login", "authentication"],
+          a: "Login is required to access advanced features like dashboard, case management, and report downloads for security.",
+        },
+        {
+          q: ["reset analysis", "clear data", "start over"],
+          a: "Refresh the page to start a new analysis. Your previous data isn't saved after logout.",
+        },
+        {
+          q: ["browser support", "compatibility", "works on"],
+          a: "Fraudshield Pro works best on Chrome, Firefox, Edge, and Safari (latest versions).",
+        },
+        {
+          q: ["slow performance", "lagging", "taking time"],
+          a: "Analysis is usually instant. If it's slow, check your internet connection or try a smaller file.",
+        },
+        {
+          q: ["chart not loading", "visualization issue"],
+          a: "Charts require JavaScript. Ensure it's enabled in your browser.",
+        },
+        {
+          q: ["download not working", "export failed"],
+          a: "Make sure you're logged in and have analyzed data. If issues persist, try a different browser.",
+        },
+        {
+          q: ["mobile view", "phone support", "tablet"],
+          a: "The platform is fully responsive and works on all mobile devices.",
+        },
+        {
+          q: ["contact support", "help desk", "technical help"],
+          a: "Contact support at info@fraudshieldpro.com or use the Contact section in the footer.",
+        },
+
+        // Project-Specific Terms
+        {
+          q: ["legitimate", "suspicious", "fraud", "risk levels"],
+          a: "Transactions are classified as: Legitimate (low risk), Suspicious (medium risk), or Fraud (high risk) based on their risk score.",
+        },
+        {
+          q: ["risk score", "what is risk", "score meaning"],
+          a: "Each transaction gets a 0-100% risk score. ≥80% = Fraud, 60-79% = Suspicious, <60% = Legitimate.",
+        },
+        {
+          q: ["amount saved", "fraud prevented", "loss prevention"],
+          a: "This estimates how much money you've saved by detecting fraud early (assumes 95% of fraud amount is recoverable).",
+        },
+        {
+          q: ["detection rate", "success rate", "effectiveness"],
+          a: "This shows the percentage of transactions flagged as suspicious or fraudulent out of your total analyzed.",
+        },
+        {
+          q: ["fraud types", "categories", "fraud classification"],
+          a: "We detect Credit Card Fraud, Wire Transfer Fraud, Online Payment Fraud, and Mobile Payment Fraud.",
+        },
+        {
+          q: ["transaction id", "unique identifier"],
+          a: "Each transaction should have a unique ID for tracking and case management.",
+        },
+        {
+          q: ["geographic analysis", "location data", "regional fraud"],
+          a: "We analyze transaction locations to identify high-risk regions and patterns.",
+        },
+        {
+          q: ["device fingerprinting", "device analysis"],
+          a: "We track device types and patterns to detect unusual behavior.",
+        },
+        {
+          q: ["time analysis", "temporal patterns"],
+          a: "Transactions outside normal business hours are flagged for additional review.",
+        },
+        {
+          q: ["behavioral analysis", "user patterns"],
+          a: "We compare transactions against historical user behavior to detect anomalies.",
+        },
+
+        // Team & Assignees
+        {
+          q: ["john", "john smith", "assign to john"],
+          a: "John Smith is our senior fraud analyst specializing in credit card fraud cases.",
+        },
+        {
+          q: ["sarah", "sarah johnson", "assign to sarah"],
+          a: "Sarah Johnson handles wire transfer and international fraud cases.",
+        },
+        {
+          q: ["mike", "mike davis", "assign to mike"],
+          a: "Mike Davis focuses on online payment and e-commerce fraud investigations.",
+        },
+        {
+          q: ["emily", "emily wilson", "assign to emily"],
+          a: "Emily Wilson manages mobile payment fraud and emerging threat analysis.",
+        },
+        {
+          q: ["team members", "analysts", "who works here"],
+          a: "Our fraud team includes John, Sarah, Mike, and Emily — each specializing in different fraud types.",
+        },
+        {
+          q: ["unassigned", "no assignee", "available cases"],
+          a: "Unassigned cases are available for any team member to pick up.",
+        },
+        {
+          q: ["workload", "case load", "how many cases"],
+          a: "Each analyst typically handles 15-20 active cases at a time.",
+        },
+        {
+          q: ["escalation", "urgent cases", "priority handling"],
+          a: "High-priority fraud cases are escalated immediately to senior analysts.",
+        },
+        {
+          q: ["collaboration", "team notes", "shared info"],
+          a: "All case notes and evidence are shared across the team for collaboration.",
+        },
+        {
+          q: ["expertise", "specialization", "skills"],
+          a: "Our team has over 50 years combined experience in financial fraud prevention.",
+        },
+
+        // Business Impact
+        {
+          q: ["roi", "return on investment", "cost savings"],
+          a: "Clients typically see 5-10x ROI through prevented fraud losses and reduced manual review time.",
+        },
+        {
+          q: ["time saved", "efficiency", "automation"],
+          a: "Fraudshield Pro reduces fraud investigation time by 80% through automated detection and case creation.",
+        },
+        {
+          q: ["scalability", "handles volume", "large business"],
+          a: "Our system scales to handle millions of transactions daily for enterprise clients.",
+        },
+        {
+          q: ["integration", "api", "connect to systems"],
+          a: "We offer REST APIs for integration with your existing payment and CRM systems.",
+        },
+        {
+          q: ["customization", "tailored solution", "specific needs"],
+          a: "Enterprise plans include custom rule configuration and dedicated support.",
+        },
+        {
+          q: ["training", "onboarding", "learn to use"],
+          a: "We provide comprehensive onboarding and training for all new clients.",
+        },
+        {
+          q: ["updates", "new features", "improvements"],
+          a: "The platform receives monthly updates with new fraud detection capabilities.",
+        },
+        {
+          q: ["pricing", "cost", "subscription"],
+          a: "Pricing is based on transaction volume. Contact sales for a custom quote.",
+        },
+        {
+          q: ["trial", "demo", "test drive"],
+          a: "We offer a 14-day free trial with full access to all features.",
+        },
+        {
+          q: ["testimonial", "reviews", "client feedback"],
+          a: "95% of clients report significant reduction in fraud losses within the first month.",
+        },
+      ];
+
+      // Match user message to Q&A
+      for (const pair of qaPairs) {
+        if (pair.q.some((keyword) => userMsg.includes(keyword))) {
+          response = pair.a;
+          break;
+        }
+      }
+
+      // Add bot response after short delay
+      setTimeout(() => {
+        addMessage(response, "bot");
+      }, 500);
+    }
+
+    function addMessage(text, sender) {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", sender);
+      msgDiv.textContent = text;
+      chatMessages.appendChild(msgDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Initialize SpeechRecognition
+    if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => {
+        statusEl.textContent = "Listening...";
+        startListenBtn.disabled = true;
+        stopListenBtn.disabled = false;
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        transcriptEl.textContent = `"${transcript}"`;
+        handleVoiceCommand(transcript.toLowerCase());
+      };
+
+      recognition.onerror = (event) => {
+        statusEl.textContent = "Error. Try again.";
+        speak("Sorry, I had trouble hearing you.");
+        resetListening();
+      };
+
+      recognition.onend = () => {
+        if (!awaitingDownloadChoice) resetListening();
+      };
+    } else {
+      statusEl.textContent = "Speech not supported.";
+      startListenBtn.disabled = true;
+    }
+
+    function resetListening() {
+      startListenBtn.disabled = false;
+      stopListenBtn.disabled = true;
+      if (!awaitingDownloadChoice) statusEl.textContent = "Ready for command.";
+    }
+
+    // Start/Stop
+    startListenBtn.addEventListener("click", () => {
+      if (recognition) recognition.start();
+    });
+    stopListenBtn.addEventListener("click", () => {
+      if (recognition) recognition.stop();
+      awaitingDownloadChoice = false;
+      resetListening();
+    });
+
+    // Speak
+    function speak(text) {
+      if (synth.speaking) synth.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 1;
+      utter.pitch = 1;
+      utter.volume = 1;
+      utter.lang = "en-US";
+      synth.speak(utter);
+    }
+
+    // Handle Commands
+    function handleVoiceCommand(cmd) {
+      if (awaitingDownloadChoice) {
+        if (cmd.includes("pdf")) {
+          speak("Downloading PDF report.");
+          document.getElementById("download-btn").click();
+          // Simulate PDF selection
+          const pdfOption = document.querySelector(
+            '.download-option[data-format="pdf"]'
+          );
+          if (pdfOption) pdfOption.click();
+          awaitingDownloadChoice = false;
+        } else if (cmd.includes("excel")) {
+          speak("Downloading Excel report.");
+          document.getElementById("download-btn").click();
+          const excelOption = document.querySelector(
+            '.download-option[data-format="excel"]'
+          );
+          if (excelOption) excelOption.click();
+          awaitingDownloadChoice = false;
+        } else {
+          speak("Please say PDF, Excel, Word, or CSV.");
+          return;
+        }
+        resetListening();
+        return;
+      }
+
+      if (cmd.includes("open") && cmd.includes("dashboard")) {
+        speak("Opening dashboard.");
+        showDashboard();
+      } else if (cmd.includes("download") && cmd.includes("file")) {
+        speak("Which format would you like? PDF, Excel, Word, or CSV?");
+        document.getElementById("download-btn").click();
+        awaitingDownloadChoice = true;
+        statusEl.textContent = "Say: PDF, Excel, Word, or CSV";
+      } else if (cmd.includes("hi jarvis") || cmd.includes("hello")) {
+        speak("Hello! How can I help you?");
+      } else {
+        speak(
+          "Command not recognized. Try: open dashboard or download the file."
+        );
+      }
+    }
+  });
+</script>
