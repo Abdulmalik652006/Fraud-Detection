@@ -311,6 +311,4 @@ Commercial licensing available
 
 Custom enterprise solutions
 
-Acknowledgments Development Team Lead Developer: Jeeva kumar S
-
 Special Thanks Contributors and testers Open source community Financial industry experts Beta testers and feedback providers
